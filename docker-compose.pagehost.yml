@@ -1,0 +1,20 @@
+# Companion stack for hosting platforms whose "additional domain" feature can only redirect
+# (e.g. xCloud). Brick serves public pages on page.<BRICK_HOST>, which must be routed to the
+# same application. Deploy this file as a SEPARATE site whose primary domain is
+# page.<BRICK_HOST>; it joins the main stack's network and forwards everything to its proxy.
+#
+# Requires the main stack (docker-compose.yml) to be running first, since it creates brick_net.
+
+services:
+  pagehost:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8091:80'
+    volumes:
+      - ./docker/pagehost.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+networks:
+  default:
+    name: brick_net
+    external: true

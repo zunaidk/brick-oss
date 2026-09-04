@@ -108,5 +108,10 @@ services:
     volumes:
       - ./docker/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
 
+# Named network so companion stacks (see docker-compose.pagehost.yml) can reach the proxy
+networks:
+  default:
+    name: brick_net
+
 volumes:
   db-data:

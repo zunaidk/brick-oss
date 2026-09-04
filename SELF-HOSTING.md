@@ -47,6 +47,15 @@ See `.env.example` for every variable. The important ones:
   accounts can never log in; password reset is unavailable in that mode.
   Without S3 the image upload button reports that uploads are disabled.
 
+## Public pages on `page.<BRICK_HOST>`
+
+Brick serves published pages from `page.<BRICK_HOST>`, so that hostname needs a DNS record and
+must reach the same stack. If your platform can attach it as an alias of the main site, do that.
+xCloud can only *redirect* additional domains, so instead deploy `docker-compose.pagehost.yml`
+as a second site (same repository, compose file `docker-compose.pagehost.yml`, port 8091,
+primary domain `page.<BRICK_HOST>`) after the main stack is running. It is a one-container
+nginx that joins the main stack's `brick_net` network and forwards everything to its proxy.
+
 ## Limitations of the OSS export
 
 - **Subdomain publishing** (`mypage.BRICK_HOST`) only works when `BRICK_HOST` has two labels
