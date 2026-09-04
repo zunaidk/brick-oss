@@ -27,6 +27,13 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import { fromBuffer } from 'file-type'
 import { UploadedImage } from '@app/db'
+import { promises as fsp } from 'node:fs'
+import { join, resolve } from 'node:path'
+
+// IMAGE_STORAGE=local stores uploads on disk (UPLOADS_DIR, served by the proxy at /uploads/)
+// instead of an S3 bucket. Default for self-hosted instances.
+const useLocalStorage = process.env.IMAGE_STORAGE === 'local'
+const uploadsDir = resolve(process.env.UPLOADS_DIR || '/usr/brick/uploads')
 
 interface S3ConfigValidationResult {
   isValid: boolean
@@ -47,6 +54,14 @@ export class S3Service {
     @InjectRepository(UploadedImage)
     private readonly uploadedImageRepository: Repository<UploadedImage>,
   ) {
+    if (useLocalStorage) {
+      this.configValidation = { isValid: true, errors: [], warnings: [] }
+      this.isConfigured = true
+      this.bucketName = ''
+      this.baseUrl = (process.env.PUBLICVAR_BRICK_URL || '').replace(/\/$/, '')
+      this.logger.log(`Image storage: local disk at ${uploadsDir}, served from ${this.baseUrl}/uploads`)
+      return
+    }
     this.configValidation = this.validateConfiguration()
 
     if (this.configValidation.isValid) {
@@ -171,8 +186,8 @@ export class S3Service {
     }
 
     try {
-      // Check if S3 service is configured
-      if (!this.isConfigured || !this.s3Client) {
+      // Check if storage is configured
+      if (!this.isConfigured || (!useLocalStorage && !this.s3Client)) {
         this.logger.error('Upload failed - S3 service not configured', uploadContext)
         throw new InternalServerErrorException('Image uploading is currently unavailable')
       }
@@ -202,6 +217,10 @@ export class S3Service {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const filename = `uploads/${uuidv4()}.${detectedType.ext}`
 
+      if (useLocalStorage) {
+        await fsp.mkdir(uploadsDir, { recursive: true })
+        await fsp.writeFile(join(uploadsDir, filename.replace(/^uploads\//, '')), file.buffer)
+      }
       // Upload the file to S3-compatible storage
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
@@ -219,7 +238,9 @@ export class S3Service {
         mimeType: detectedType.mime,
       })
 
-      await this.s3Client.send(command)
+      if (!useLocalStorage) {
+        await this.s3Client!.send(command)
+      }
 
       // Build the full URL
       const s3Url = `${this.baseUrl}/${filename}`

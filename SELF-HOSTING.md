@@ -41,6 +41,8 @@ See `.env.example` for every variable. The important ones:
 - `SELF_HOSTED_PLAN` (default true) puts every account on an unlimited, free "Self-hosted" plan:
   private pages, custom fonts, unlimited workspaces, subdomains and collaborators, no upgrade
   prompts. Existing Free accounts are moved over on the next start.
+- `ALLOW_SIGNUP=false` closes registration once your own account exists. Existing accounts keep
+  working; new local or social sign-ups get a 403.
 - `JWT_SECRET` signs login sessions. Rotating it logs everyone out.
 - Email (Mailjet), image uploads (S3-compatible), social login (GitHub, Google) and Stripe are
   optional. Without Mailjet no email is sent, so set `SKIP_EMAIL_VERIFICATION=true` or new
@@ -64,6 +66,37 @@ itself on port 3001. Behind a TLS-terminating proxy that is impossible, so with
 route it. On xCloud, for each custom domain: point its DNS at the server, then deploy
 `docker-compose.extra-domain.yml` as another Git site with that domain as primary (copy the file
 and change the host port for every further domain; 8092 is used by the template).
+
+## Migrating from brick.do
+
+brick.do has no self-service export, but everything a logged-in user owns is readable through the
+same API the editor uses. The migration is: export in the browser, download images, import into
+this instance's database with `docker/import-brick-export.js`.
+
+1. **Export.** Log in to brick.do in Chrome, open DevTools on any brick.do tab and run a script that
+   fetches `/api/workspace`, `/api/workspace/<id>/pages`, `/api/page/<id>/content|styles|head-tags`
+   for every page and `/api/public-address`, then saves the result as a JSON download with the shape
+   `{profile, workspace, pagesTree, publicAddresses, themes, pages:{<id>:{content,styles,headTags}}}`.
+2. **Images.** Collect every `https://cdn-images.brick.do/...` URL in the exported content (including
+   `srcset` variants), download them and write `manifest.json` mapping URL -> local filename.
+3. **Copy to the server.** Put the images in the `uploads` volume under `migrated/` so the proxy
+   serves them at `https://BRICK_HOST/uploads/migrated/<file>`:
+   ```bash
+   V=$(docker volume ls -q | grep _uploads)          # the compose project's uploads volume
+   docker run --rm -v $V:/u -v $PWD:/src alpine sh -c 'mkdir -p /u/migrated && cp /src/images/* /u/migrated/'
+   ```
+4. **Import.** Sign up on the new instance first, then from the site directory:
+   ```bash
+   docker compose cp export.json server:/tmp/export.json
+   docker compose cp images/manifest.json server:/tmp/manifest.json
+   docker compose exec server node docker/import-brick-export.js /tmp/export.json \
+     --user you@example.com \
+     --images-base https://BRICK_HOST/uploads/migrated --images-manifest /tmp/manifest.json \
+     --domains docs.example.com,other.example.com      # custom domains to keep; or --no-domains
+   ```
+   Page IDs, short IDs, slugs and ordering are preserved; re-running skips existing pages.
+5. **Route each kept custom domain** to the stack (see "Custom domains for published pages") and
+   move its DNS.
 
 ## Limitations of the OSS export
 

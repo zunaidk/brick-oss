@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ConflictException, forwardRef, Inject, Injectable } from '@nestjs/common'
+import { ConflictException,
+  ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common'
 import { User } from '@app/db'
 import { In, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -42,6 +43,10 @@ export class UserService {
   async create(
     user: Omit<User, 'id' | 'subscriptionPlan'> & Partial<Pick<User, 'subscriptionPlan'>>,
   ) {
+    if (process.env.ALLOW_SIGNUP === 'false') {
+      // Private instance: no new accounts, whatever the provider (local, GitHub, Google)
+      throw new ForbiddenException('Sign-up is disabled on this instance')
+    }
     if (user.provider === AuthProvider.local) {
       const existingLocalUserWithEmail = await this.userModel.findOne({
         provider: AuthProvider.local,

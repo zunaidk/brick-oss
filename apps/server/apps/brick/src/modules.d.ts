@@ -45,7 +45,10 @@ declare namespace NodeJS {
     MAINTENANCE_MODE: string
     JWT_SECRET: string
     EXTERNAL_TLS_TERMINATION?: string
+    IMAGE_STORAGE?: string
+    UPLOADS_DIR?: string
     SELF_HOSTED_PLAN?: string
+    ALLOW_SIGNUP?: string
     SKIP_EMAIL_VERIFICATION?: string
     CONFIRM_EMAIL_JWT_SECRET?: string
     CHANGE_EMAIL_SECRET?: string

@@ -57,6 +57,14 @@ server {
 
     location /api { proxy_pass http://brick_server; }
 
+    # Uploaded images (IMAGE_STORAGE=local): shared volume, also holds migrated images
+    location /uploads/ {
+        alias /var/www/uploads/;
+        expires 30d;
+        add_header Cache-Control "public";
+        try_files $uri =404;
+    }
+
     # Landing (Next.js) routes
     location /_next/          { proxy_pass http://$brick_landing_upstream; }
     location /landing-assets/ { proxy_pass http://$brick_landing_upstream; }
