@@ -16,9 +16,12 @@
  */
 
 import { ObjectValues, SubscriptionPlansList } from './types'
+import { UNLIMITED_ENTITY_LIMIT } from './utils'
 
 export const FreeSubscriptionId = {
   free: 'free',
+  // Everything unlocked, no billing. Assigned automatically when SELF_HOSTED_PLAN=true.
+  selfHosted: 'self_hosted',
 } as const
 
 export type FreeSubscriptionId = ObjectValues<typeof FreeSubscriptionId>
@@ -57,5 +60,21 @@ export const FreeSubscriptionPlans: SubscriptionPlansList<FreeSubscriptionId> = 
     haveFontSettings: false,
     mandatoryAnalytics: true,
     privatePages: false,
+  },
+  [FreeSubscriptionId.selfHosted]: {
+    id: FreeSubscriptionId.selfHosted,
+    priceCents: 0,
+    entities: {
+      workspaces: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+      collabWorkspaces: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+      collabWorkspacesUsers: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+      domains: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+      subdomains: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+      collabPagesUsers: { limit: UNLIMITED_ENTITY_LIMIT, exceedPerItemPriceId: null },
+    },
+    canWeeklyBackups: true,
+    haveFontSettings: true,
+    mandatoryAnalytics: false,
+    privatePages: true,
   },
 } as const

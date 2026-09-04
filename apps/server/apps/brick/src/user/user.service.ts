@@ -51,6 +51,9 @@ export class UserService {
         throw new ConflictException('This email is already in use')
       }
     }
+    if (process.env.SELF_HOSTED_PLAN === 'true' && !user.subscriptionPlan) {
+      user = { ...user, subscriptionPlan: SubscriptionPlanId.selfHosted }
+    }
     const newUserData = this.userModel.create({
       ...user,
       email: user.email.trim().toLowerCase(),

@@ -47,6 +47,7 @@ services:
       PUBLICVAR_BRICK_URL: https://${BRICK_HOST}
       BRICK_IP: ${BRICK_IP:-}
       MAINTENANCE_MODE: 'false'
+      SELF_HOSTED_PLAN: ${SELF_HOSTED_PLAN:-true}
       DB_HOST: db
       DB_PORT: '5432'
       DB_USERNAME: brick

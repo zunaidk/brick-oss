@@ -44,6 +44,13 @@ async function main() {
       const ran = await connection.runMigrations({ transaction: 'each' })
       console.log(`[migrate] Ran ${ran.length} pending migration(s)`)
     }
+
+    if (process.env.SELF_HOSTED_PLAN === 'true') {
+      const res = await connection.query(
+        `UPDATE "users" SET "subscriptionPlan" = 'self_hosted' WHERE "subscriptionPlan" = 'free'`,
+      )
+      console.log(`[migrate] SELF_HOSTED_PLAN: moved ${res[1] ?? 0} user(s) from free to self_hosted`)
+    }
   } finally {
     await connection.close()
   }

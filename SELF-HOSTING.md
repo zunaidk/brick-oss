@@ -38,6 +38,9 @@ See `.env.example` for every variable. The important ones:
 
 - `BRICK_HOST` is baked into the frontend bundles at build time. Changing it requires
   `docker compose build`.
+- `SELF_HOSTED_PLAN` (default true) puts every account on an unlimited, free "Self-hosted" plan:
+  private pages, custom fonts, unlimited workspaces, subdomains and collaborators, no upgrade
+  prompts. Existing Free accounts are moved over on the next start.
 - `JWT_SECRET` signs login sessions. Rotating it logs everyone out.
 - Email (Mailjet), image uploads (S3-compatible), social login (GitHub, Google) and Stripe are
   optional. Without Mailjet no email is sent, so set `SKIP_EMAIL_VERIFICATION=true` or new

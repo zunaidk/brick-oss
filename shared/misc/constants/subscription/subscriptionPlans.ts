@@ -41,6 +41,7 @@ export const SubscriptionPlanId = {
 
 export const SubscriptionPlansNames: { [key in SubscriptionPlanId]: string } = {
   [SubscriptionPlanId.free]: 'Free',
+  [SubscriptionPlanId.selfHosted]: 'Self-hosted',
   [SubscriptionPlanId.saasMantraCode1]: 'SaaS Mantra 1 code',
   [SubscriptionPlanId.saasMantraCode2]: 'SaaS Mantra 2 code',
   [SubscriptionPlanId.saasMantraCode3]: 'SaaS Mantra 3 code',
