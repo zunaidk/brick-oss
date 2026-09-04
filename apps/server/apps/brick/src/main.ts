@@ -112,6 +112,10 @@ async function bootstrap() {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     .forEach(allowedDomainsStorage.add, allowedDomainsStorage)
 
+  if (process.env.EXTERNAL_TLS_TERMINATION === 'true') {
+    // Honour X-Forwarded-* from the reverse proxy (req.protocol, req.ip, secure cookies)
+    app.set('trust proxy', true)
+  }
   app.use(trimWwwMiddleware)
   app.use(compression())
 

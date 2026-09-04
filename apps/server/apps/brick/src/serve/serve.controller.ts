@@ -316,8 +316,11 @@ export class ServeController {
     }
 
     const canonicalLink = await this.pageService.getPageCanonicalLink(page)
-    // For external hosts, the reverse proxy doesn't do TLS termination so we don't want to use 'forceHttps'.
-    if (this.getPageLinkFromRequest(req, { scheme: 'keep' }) !== canonicalLink) {
+    // Upstream, custom domains hit Brick's own HTTPS server, so the request scheme was trusted as-is.
+    // Behind a TLS-terminating proxy (EXTERNAL_TLS_TERMINATION) every request arrives as plain
+    // http and comparing it with the https canonical link would redirect forever.
+    const scheme = process.env.EXTERNAL_TLS_TERMINATION === 'true' ? 'forceHttps' : 'keep'
+    if (this.getPageLinkFromRequest(req, { scheme }) !== canonicalLink) {
       res.redirect(canonicalLink)
       return
     }
