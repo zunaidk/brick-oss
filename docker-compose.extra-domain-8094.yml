@@ -1,0 +1,16 @@
+# Companion stack for ONE custom domain (port 8094) attached to a Brick page (see SELF-HOSTING.md).
+# Requires the main stack (docker-compose.yml) to be running first, since it creates brick_net.
+
+services:
+  pagehost:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8094:80'
+    volumes:
+      - ./docker/pagehost.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+networks:
+  default:
+    name: brick_net
+    external: true

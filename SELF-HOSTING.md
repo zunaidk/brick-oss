@@ -64,8 +64,9 @@ Users can attach their own domain to a page. Upstream, Brick obtained Let's Encr
 itself on port 3001. Behind a TLS-terminating proxy that is impossible, so with
 `EXTERNAL_TLS_TERMINATION=true` (the default) Brick just records the domain and the proxy must
 route it. On xCloud, for each custom domain: point its DNS at the server, then deploy
-`docker-compose.extra-domain.yml` as another Git site with that domain as primary (copy the file
-and change the host port for every further domain; 8092 is used by the template).
+`docker-compose.extra-domain.yml` (port 8092) as another Git site with that domain as primary.
+Every domain needs its own host port, so further domains use `docker-compose.extra-domain-8093.yml`,
+`-8094`, `-8095`, `-8096` (copy one and change the port if you need more).
 
 ## Migrating from brick.do
 
