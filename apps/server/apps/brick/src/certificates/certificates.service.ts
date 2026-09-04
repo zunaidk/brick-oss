@@ -25,6 +25,10 @@ import { certificatesStorage } from '@app/storages/certificatesStorage'
 import { MyLoggerService } from '@brick/logger/my-logger.service'
 import { PublicAddress } from '@app/db'
 
+// When a reverse proxy (e.g. xCloud nginx) terminates TLS in front of Brick, the server must not
+// try to obtain Let's Encrypt certificates itself: the ACME challenge could never reach it.
+const externalTlsTermination = process.env.EXTERNAL_TLS_TERMINATION === 'true'
+
 const maintenanceMode = process.env.MAINTENANCE_MODE === 'true'
 
 @Injectable()
@@ -41,6 +45,10 @@ export class CertificatesService {
   }
 
   async loadCertificates() {
+    if (externalTlsTermination) {
+      console.log('EXTERNAL_TLS_TERMINATION=true: certificates are managed by the reverse proxy')
+      return
+    }
     const publicAddresses = await this.publicAddressService.getExternalDomainsAndCertificates()
 
     publicAddresses.map(address => {
@@ -115,7 +123,7 @@ export class CertificatesService {
   }
 
   async generateCertsForPublicAddress({ externalDomain }: PublicAddress) {
-    if (!externalDomain) {
+    if (!externalDomain || externalTlsTermination) {
       return
     }
 

@@ -163,6 +163,14 @@ export class PublicAddressService {
       throw new BadRequestException()
     }
 
+    if (process.env.EXTERNAL_TLS_TERMINATION === 'true') {
+      // TLS for custom domains is handled by the reverse proxy in front of Brick; nothing to do.
+      this.logger.info('generateSsl skipped, external TLS termination', {
+        externalDomain: address.externalDomain,
+      })
+      return
+    }
+
     const { cert, key, wwwCert, wwwKey } =
       (await this.certificatesService.generateCertsForPublicAddress(address)) || {}
 

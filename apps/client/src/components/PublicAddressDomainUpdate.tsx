@@ -201,6 +201,8 @@ function PublicAddressDomainUpdate({ pageId, publicAddress, hide }: Props): Reac
 
   const successContent = isCustomDomainType ? customDomainSuccess : subdomainSuccess
 
+  // Set at build time; when TLS is terminated by the hosting proxy there is nothing to generate
+  const externalTlsTermination = process.env.PUBLICVAR_EXTERNAL_TLS_TERMINATION === 'true'
   const [isSslGenLoading, setIsSslGenLoading] = useState(false)
   const [sslGenResult, setSslGenResult] = useState<SslGenResult>(null)
 
@@ -295,6 +297,7 @@ function PublicAddressDomainUpdate({ pageId, publicAddress, hide }: Props): Reac
 
           {isCustomDomainType &&
             isCurrentDomainCustom &&
+            !externalTlsTermination &&
             !sslGenResult &&
             (!isSslGenLoading ? (
               <button
