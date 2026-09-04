@@ -14,7 +14,7 @@ all of that is filled in here.
 | `landing` | `docker/Dockerfile` → `landing` | Next.js marketing site shown to logged-out visitors on `/` |
 | `proxy`   | `nginx:1.27-alpine`       | Routes between server, websocket and landing on one port    |
 
-Only the proxy is published, on `127.0.0.1:${HOST_PORT}` (default 8090). Put a TLS-terminating
+Only the proxy is published, on `127.0.0.1:8090` (edit `docker-compose.yml` to change it). Put a TLS-terminating
 reverse proxy in front of it (the xCloud Docker stack does this for you).
 
 ## Quick start
