@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const jwtConstants = {
+const secret = process.env.JWT_SECRET
+if (!secret) {
+  throw new Error('JWT_SECRET env var is required')
+}
 
-  secret: 'REDACTED',
+export const jwtConstants = {
+  secret,
   expiresIn: '87600h',
 }

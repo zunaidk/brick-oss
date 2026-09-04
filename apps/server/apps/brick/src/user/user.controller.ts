@@ -44,8 +44,7 @@ import jwt from 'jsonwebtoken'
 
 const maintenanceMode = process.env.MAINTENANCE_MODE === 'true'
 
-export const CHANGE_EMAIL_SECRET =
-  'REDACTED'
+export const CHANGE_EMAIL_SECRET = process.env.CHANGE_EMAIL_SECRET || process.env.JWT_SECRET!
 export const CHANGE_EMAIL_EXPIRES_IN = '15m'
 
 const encodeChangeEmailToken = (data: object) => {

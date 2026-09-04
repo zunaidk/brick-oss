@@ -41,7 +41,7 @@ export class AcmeService {
   }
 
   async generateCertAndKey({ domain }: { domain: string }) {
-    const email = 'REDACTED'
+    const email = process.env.ACME_EMAIL || ''
 
     const dirTestPebbleUrl = 'https://0.0.0.0:14000/dir'
     const acmeDirectoryUrl = isProduction ? acme.directory.letsencrypt.production : dirTestPebbleUrl

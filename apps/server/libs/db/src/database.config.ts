@@ -33,7 +33,8 @@ const dbConfig: TypeOrmModuleOptions = {
   password: DB_PASSWORD,
   database: DB_DATABASE,
   ssl: DB_SSL === 'true',
-  logging: true,
+  // Full query logging is very noisy in production; opt in with DB_LOGGING=true
+  logging: process.env.DB_LOGGING === 'true' ? true : ['error', 'warn', 'migration'],
   entities,
   subscribers: entities,
   synchronize: false,

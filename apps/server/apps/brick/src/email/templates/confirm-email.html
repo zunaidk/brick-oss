@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirm your email</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1d1d1f;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f5f7;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#ffffff;border-radius:12px;padding:32px;">
+        <tr><td style="font-size:22px;font-weight:600;padding-bottom:16px;">Confirm your email</td></tr>
+        <tr><td style="font-size:16px;line-height:1.5;">Hi {{userName}},<br /><br />Thanks for signing up for Brick. Please confirm your email address to finish creating your account.</td></tr>
+        <tr><td style="padding:24px 0;"><a href="https://{{appHost}}/api/auth/confirm-email/{{token}}" style="display:inline-block;background:#111111;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;">Confirm email</a></td></tr>
+        <tr><td style="font-size:13px;color:#86868b;">Or open this link: https://{{appHost}}/api/auth/confirm-email/{{token}}</td></tr>
+        <tr><td style="font-size:13px;color:#86868b;padding-top:24px;">
+          This email was sent by <a href="https://{{appHost}}" style="color:#86868b;">{{appHost}}</a>.
+          If you did not expect it, you can safely ignore it.
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

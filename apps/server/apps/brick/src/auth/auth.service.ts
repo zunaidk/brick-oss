@@ -37,8 +37,7 @@ import { ILike, In, Repository } from 'typeorm'
 import { EmailService } from '@brick/email/email.service'
 import { AuthenticatedRequest } from '@brick/types'
 
-const confirmEmailJwtSecret =
-  'REDACTED'
+const confirmEmailJwtSecret = process.env.CONFIRM_EMAIL_JWT_SECRET || process.env.JWT_SECRET!
 
 export type RequestWithAccessToken = AuthenticatedRequest & {
   user: { accessToken: string }

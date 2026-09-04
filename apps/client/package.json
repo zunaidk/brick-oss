@@ -4,7 +4,7 @@
   "scripts": {
     "generate-types-schema": "node tools/generate-types-schema.js",
     "dev": "pnpm run generate-types-schema && PORT=4000 TAILWIND_MODE=watch FAST_REFRESH=true node scripts/start.js",
-    "build": "pnpm run generate-types-schema && node scripts/build.js",
+    "build": "node scripts/build.js",
     "check": "tsc --noEmit",
     "test": "node scripts/test.js"
   },

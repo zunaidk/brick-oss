@@ -166,8 +166,10 @@ export class AuthController {
       provider: AuthProvider.local,
     })
 
-    // Email verification
-    if (!isProduction && devSkipVerification) {
+    // Email verification. SKIP_EMAIL_VERIFICATION=true lets self-hosted instances without an
+    // email provider create accounts that are usable immediately.
+    const skipEmailVerification = process.env.SKIP_EMAIL_VERIFICATION === 'true'
+    if ((!isProduction && devSkipVerification) || skipEmailVerification) {
       await this.userService.updateById(user.id, { isEmailConfirmed: true })
     } else {
       const confirmEmailToken = await this.authService.generateConfirmEmailJwt({

@@ -47,7 +47,19 @@ import { TypeOrmModule } from '@nestjs/typeorm'
     EmailModule,
     TypeOrmModule.forFeature([UserResetPassword]),
   ],
-  providers: [AuthService, GithubStrategy, LocalStrategy, GoogleStrategy, JwtStrategy, WsJwtGuard],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    WsJwtGuard,
+    // Social login providers are only registered when their OAuth credentials are configured
+    ...(process.env.OAUTH_GITHUB_CLIENT_ID && process.env.OAUTH_GITHUB_CLIENT_SECRET
+      ? [GithubStrategy]
+      : []),
+    ...(process.env.OAUTH_GOOGLE_CLIENT_ID && process.env.OAUTH_GOOGLE_CLIENT_SECRET
+      ? [GoogleStrategy]
+      : []),
+  ],
   controllers: [AuthController],
   exports: [AuthService, WsJwtGuard],
 })

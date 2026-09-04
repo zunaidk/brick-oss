@@ -23,6 +23,11 @@ import { resolve } from 'node:path'
 import { User } from '@app/db'
 
 const appHost = process.env.PUBLICVAR_BRICK_HOST
+// Sender must be a verified address in your Mailjet account
+const emailSender = {
+  Email: process.env.EMAIL_FROM_ADDRESS || `robot@${appHost}`,
+  Name: process.env.EMAIL_FROM_NAME || 'Brick',
+}
 
 const getTemplateHtml = (templateName: string) =>
   fs.readFileSync(resolve(__dirname, `./templates/${templateName}`)).toString()
@@ -40,13 +45,25 @@ const changeEmailVerifyNewTemplate = handlebars.compile(
 
 @Injectable()
 export class EmailService {
-  private mailjetClient: Email.Client
+  private mailjetClient: Email.Client | null
 
   constructor() {
-    this.mailjetClient = mailjet.connect(
-      'REDACTED',
-      'REDACTED',
-    )
+    const { MAILJET_API_KEY, MAILJET_SECRET_KEY } = process.env
+    if (MAILJET_API_KEY && MAILJET_SECRET_KEY) {
+      this.mailjetClient = mailjet.connect(MAILJET_API_KEY, MAILJET_SECRET_KEY)
+    } else {
+      this.mailjetClient = null
+      console.warn(
+        'MAILJET_API_KEY / MAILJET_SECRET_KEY are not set: outgoing email is disabled',
+      )
+    }
+  }
+
+  private getClient(): Email.Client {
+    if (!this.mailjetClient) {
+      throw new Error('Email is not configured (set MAILJET_API_KEY and MAILJET_SECRET_KEY)')
+    }
+    return this.mailjetClient
   }
 
   async sendSaasMantraCompleteSignUpEmail({
@@ -59,13 +76,10 @@ export class EmailService {
     userFinishSignUpId: string
   }) {
     try {
-      await this.mailjetClient.post('send', { version: 'v3.1' }).request({
+      await this.getClient().post('send', { version: 'v3.1' }).request({
         Messages: [
           {
-            From: {
-              Email: 'robot@brick.do',
-              Name: 'Brick',
-            },
+            From: emailSender,
             To: [
               {
                 Email: email,
@@ -98,13 +112,10 @@ export class EmailService {
     token: string
   }) {
     try {
-      await this.mailjetClient.post('send', { version: 'v3.1' }).request({
+      await this.getClient().post('send', { version: 'v3.1' }).request({
         Messages: [
           {
-            From: {
-              Email: 'robot@brick.do',
-              Name: 'Brick',
-            },
+            From: emailSender,
             To: [
               {
                 Email: email,
@@ -133,13 +144,10 @@ export class EmailService {
     tokenId: string
   }) {
     try {
-      await this.mailjetClient.post('send', { version: 'v3.1' }).request({
+      await this.getClient().post('send', { version: 'v3.1' }).request({
         Messages: [
           {
-            From: {
-              Email: 'robot@brick.do',
-              Name: 'Brick',
-            },
+            From: emailSender,
             To: [
               {
                 Email: email,
@@ -164,13 +172,10 @@ export class EmailService {
 
   async sendConfirmChangeEmailOldEmail(user: User, newEmail: string, token: string) {
     try {
-      await this.mailjetClient.post('send', { version: 'v3.1' }).request({
+      await this.getClient().post('send', { version: 'v3.1' }).request({
         Messages: [
           {
-            From: {
-              Email: 'robot@brick.do',
-              Name: 'Brick',
-            },
+            From: emailSender,
             To: [
               {
                 Email: user.email,
@@ -200,13 +205,10 @@ export class EmailService {
 
   async sendVerifyNewEmailAfterChange(user: User, newEmail: string, token: string) {
     try {
-      await this.mailjetClient.post('send', { version: 'v3.1' }).request({
+      await this.getClient().post('send', { version: 'v3.1' }).request({
         Messages: [
           {
-            From: {
-              Email: 'robot@brick.do',
-              Name: 'Brick',
-            },
+            From: emailSender,
             To: [
               {
                 Email: newEmail,

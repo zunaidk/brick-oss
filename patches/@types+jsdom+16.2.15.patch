@@ -2,8 +2,8 @@ diff --git a/base.d.ts b/base.d.ts
 index fcfed64..223db7e 100755
 --- a/base.d.ts
 +++ b/base.d.ts
-@@ -190,7 +190,9 @@ declare module "jsdom" {
-
+@@ -190,6 +190,8 @@ declare module "jsdom" {
+ 
          /* ECMAScript Globals */
          globalThis: DOMWindow;
 +        // @ts-ignore
