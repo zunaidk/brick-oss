@@ -31,6 +31,7 @@ services:
         PUBLICVAR_BRICK_DOMAIN: ${BRICK_COOKIE_DOMAIN:-${BRICK_HOST}}
         PUBLICVAR_BRICK_URL: https://${BRICK_HOST}
         PUBLICVAR_BRICK_CLIENT_BANNER: ${BRICK_CLIENT_BANNER:-}
+        PUBLICVAR_EXTERNAL_TLS_TERMINATION: ${EXTERNAL_TLS_TERMINATION:-true}
     restart: unless-stopped
     depends_on:
       db:
@@ -48,6 +49,7 @@ services:
       BRICK_IP: ${BRICK_IP:-}
       MAINTENANCE_MODE: 'false'
       SELF_HOSTED_PLAN: ${SELF_HOSTED_PLAN:-true}
+      EXTERNAL_TLS_TERMINATION: ${EXTERNAL_TLS_TERMINATION:-true}
       DB_HOST: db
       DB_PORT: '5432'
       DB_USERNAME: brick

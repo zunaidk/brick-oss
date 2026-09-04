@@ -56,14 +56,23 @@ as a second site (same repository, compose file `docker-compose.pagehost.yml`, p
 primary domain `page.<BRICK_HOST>`) after the main stack is running. It is a one-container
 nginx that joins the main stack's `brick_net` network and forwards everything to its proxy.
 
+## Custom domains for published pages
+
+Users can attach their own domain to a page. Upstream, Brick obtained Let's Encrypt certificates
+itself on port 3001. Behind a TLS-terminating proxy that is impossible, so with
+`EXTERNAL_TLS_TERMINATION=true` (the default) Brick just records the domain and the proxy must
+route it. On xCloud, for each custom domain: point its DNS at the server, then deploy
+`docker-compose.extra-domain.yml` as another Git site with that domain as primary (copy the file
+and change the host port for every further domain; 8092 is used by the template).
+
 ## Limitations of the OSS export
 
 - **Subdomain publishing** (`mypage.BRICK_HOST`) only works when `BRICK_HOST` has two labels
   (like `brick.do`). The server rejects hosts with more than three labels, so
   `mypage.brick.example.com` is turned away. It also needs a wildcard DNS record and a
   wildcard certificate on the outer proxy.
-- **Custom domains** rely on the server issuing Let's Encrypt certificates itself on port 3001.
-  That does not work behind a TLS-terminating proxy, so custom domains are effectively disabled.
+- **Custom domains** need a proxy route per domain (see above); Brick cannot issue certificates
+  behind a TLS-terminating proxy.
 - Stripe price IDs, analytics IDs and the Telegram bot were stripped from the export.
   Subscriptions cannot be purchased; every account runs on the default plan.
 - The stack pins Node 16 because the client build (ejected CRA, webpack 5, CKEditor 5) and
