@@ -93,6 +93,22 @@ export const SignUpModal = () => {
     }
   }
 
+  // Private instance (ALLOW_SIGNUP=false at build time): explain instead of offering the form
+  if (process.env.PUBLICVAR_ALLOW_SIGNUP === 'false') {
+    return (
+      <AuthModal
+        _title='Sign up'
+        desc=''
+        type={ModalType.signUp}
+        isOpen={modalState.isSignUpModalOpen}
+      >
+        <p style={{ textAlign: 'center', margin: '1rem 0' }}>
+          This is a private Brick instance. New accounts cannot be created here.
+        </p>
+      </AuthModal>
+    )
+  }
+
   return (
     <AuthModal
       _title='Sign up'

@@ -57,18 +57,20 @@ const AuthButtonsContainer = ({
       >
         Log in
       </Btn>
-      <Btn
-        styleType='primary'
-        onClick={() =>
-          onClick(prev => ({
-            ...prev,
-            ...initialModalState,
-            isSignUpModalOpen: true,
-          }))
-        }
-      >
-        Sign up
-      </Btn>
+      {process.env.PUBLICVAR_ALLOW_SIGNUP !== 'false' && (
+        <Btn
+          styleType='primary'
+          onClick={() =>
+            onClick(prev => ({
+              ...prev,
+              ...initialModalState,
+              isSignUpModalOpen: true,
+            }))
+          }
+        >
+          Sign up
+        </Btn>
+      )}
     </AuthButtons>
   )
 }
