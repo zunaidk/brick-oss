@@ -2,7 +2,7 @@
 # pages) + Next.js landing + an internal nginx that routes between them.
 #
 # Copy .env.example to .env and fill it in, then: docker compose up -d --build
-# Only port ${HOST_PORT} (default 8080) is published, bound to localhost; put your TLS-terminating
+# Only port ${HOST_PORT} (default 8090) is published, bound to localhost; put your TLS-terminating
 # proxy (e.g. the xCloud nginx) in front of it.
 
 services:
@@ -100,7 +100,7 @@ services:
       - server
       - landing
     ports:
-      - '127.0.0.1:${HOST_PORT:-8080}:80'
+      - '127.0.0.1:${HOST_PORT:-8090}:80'
     environment:
       BRICK_HOST: ${BRICK_HOST}
       NGINX_ENVSUBST_FILTER: '^BRICK_'
