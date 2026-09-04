@@ -30,6 +30,7 @@ services:
         PUBLICVAR_BRICK_HOST: ${BRICK_HOST:?Set BRICK_HOST in .env}
         PUBLICVAR_BRICK_DOMAIN: ${BRICK_COOKIE_DOMAIN:-${BRICK_HOST}}
         PUBLICVAR_BRICK_URL: https://${BRICK_HOST}
+        PUBLICVAR_ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
         PUBLICVAR_BRICK_CLIENT_BANNER: ${BRICK_CLIENT_BANNER:-}
         PUBLICVAR_EXTERNAL_TLS_TERMINATION: ${EXTERNAL_TLS_TERMINATION:-true}
     restart: unless-stopped
@@ -96,6 +97,7 @@ services:
         PUBLICVAR_BRICK_HOST: ${BRICK_HOST}
         PUBLICVAR_BRICK_DOMAIN: ${BRICK_COOKIE_DOMAIN:-${BRICK_HOST}}
         PUBLICVAR_BRICK_URL: https://${BRICK_HOST}
+        PUBLICVAR_ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
     restart: unless-stopped
     environment:
       NODE_ENV: production
